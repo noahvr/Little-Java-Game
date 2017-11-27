@@ -2,19 +2,12 @@ package field;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-import java.util.Arrays;
+
 
 import javax.swing.JFrame;
 
@@ -23,13 +16,8 @@ public class Main extends JFrame implements Runnable{
 	private Canvas canvas=new Canvas();
 	private boolean pause;
 	private BufferStrategy buffer;
-	private char dir;
-	private char nextDir;
-	private boolean stationary=true;
-	boolean keyDown=false;
-	private boolean switchSprite=true;
+	private boolean keyDown=false;
 	long keyTime=0;
-	Set<Key> keysDown;
 	Key w,a,s,d;
 	int[] ican;
 	int[] forcedmove;
@@ -59,15 +47,15 @@ public class Main extends JFrame implements Runnable{
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 				
-		setBounds(0,0,500,500);
+		setBounds(0,0,275,275);
 		
 		setLocationRelativeTo(null);
 		
 		add(canvas);
 		setVisible(true);
+		setResizable(false);
 		canvas.createBufferStrategy(3);
 		buffer=canvas.getBufferStrategy();
-		
 		//KEY PRESSES DOING THINGS
 		
 		
@@ -104,7 +92,6 @@ public class Main extends JFrame implements Runnable{
 			 }
 				public void keyTyped(KeyEvent arg) {
 					//System.out.println(arg.getKeyChar());
-					dir=arg.getKeyChar();
 					if (arg.getKeyChar()=='p')pause=!pause;		
 					
 				}
@@ -120,7 +107,7 @@ public class Main extends JFrame implements Runnable{
 							}
 							meme--;
 						}
-						if(arg.getKeyChar()=='a') {
+						else if(arg.getKeyChar()=='a') {
 							a.setPriority(0);
 							for (int i=0;i<4;i++) {
 								if(ican[i]==2) {
@@ -130,7 +117,7 @@ public class Main extends JFrame implements Runnable{
 							}
 							meme--;
 						}
-						if(arg.getKeyChar()=='s') {
+						else if(arg.getKeyChar()=='s') {
 							s.setPriority(0);
 							for (int i=0;i<4;i++) {
 								if(ican[i]==3) {
@@ -140,7 +127,7 @@ public class Main extends JFrame implements Runnable{
 							}
 							meme--;
 						}
-						if(arg.getKeyChar()=='d') {
+						else if(arg.getKeyChar()=='d') {
 							d.setPriority(0);
 							for (int i=0;i<4;i++) {
 								if(ican[i]==4) {
@@ -158,33 +145,69 @@ public class Main extends JFrame implements Runnable{
 	}
 	
 	public void input() throws IOException {
-		MC mc = new MC(222,222);
+		
 		//fix the screen not having the right amount of pixels
 		canvas.setPreferredSize(getSize());
 		forcedmove=new int[4];
+		Tile [][] rofl=new Tile[11][11];
 		
+		for (int i=0;i<11;i++) {
+			for(int o=0;o<11;o++) {
+				rofl[o][i]=new Tile(o,i,o*25,i*25);
+			}
+		}
 		
+		Map map = new Map(11,11,rofl);
+		MC mc = new MC(125,125,map);
+		Models m = new Models();
+		m.loadAll();
+
+		pack();
+		int key;
+		long timer=System.nanoTime();
 		while(!pause) {
 			do {
 				do {
 					Graphics g = buffer.getDrawGraphics();
 					g.setColor(Color.WHITE);
 					g.fillRect(0, 0, getWidth(), getHeight());
-					pack();
-						//if no input
-
-							
-							mc.render(g,ican,w,a,s,d);
-							
-						
-						
-							//if no buttons are pressed or the player is trying to go in a different direction and we have gone the minimum distance stop
-							
-						
-						
 					
-//					System.out.println(stationary);
-					//if moving do this
+						//if no input
+							//Movement code
+						
+						//forced movement
+					key=0;
+						for (int z=3;z>-1;z--) {
+							if(ican[z]!=0) {
+								key=ican[z];
+								break;
+							}
+						}
+						if(key!=0&&map.navigate(timer)) {
+							if(key==1&&map.nextTile(1, mc).isEmpty()==true) {
+								map.transform(0, 25);
+								mc.setTile(map.nextTile(1, mc));
+							}
+							if(key==2&&map.nextTile(2, mc).isEmpty()==true) {
+								map.transform(25, 0);
+								mc.setTile(map.nextTile(2, mc));
+							}
+							if(key==3&&map.nextTile(3, mc).isEmpty()==true) {
+								map.transform(0, -25);
+								mc.setTile(map.nextTile(3, mc));
+							}
+							if(key==4&&map.nextTile(4, mc).isEmpty()==true) {
+								map.transform(-25, 0);
+								mc.setTile(map.nextTile(4, mc));
+							}
+							timer=System.nanoTime();
+						}
+							
+
+							map.render(g,m);
+
+							mc.render(g,ican,w,a,s,d,map);
+							System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
 
 				}while(buffer.contentsRestored());
 				

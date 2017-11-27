@@ -33,8 +33,11 @@ public class MC extends Entity {
 	int inc=0;
 	private int xLock=0;
 	private int yLock=0;
+	private int xLoc;
+	private int yLoc;
 	private int tilePointerX=0;
 	private int tilePointerY=0;
+	private Tile tile;
 	
 	public MC() throws IOException{
 		
@@ -49,13 +52,17 @@ public class MC extends Entity {
 		face='w';
 		key=0;
 	}
-	public MC(int x, int y) throws IOException {
+	public MC(int x, int y, Map map) throws IOException {
 		this();
 		this.x=x;
 		this.y=y;
+		tile=map.getMap()[map.getMap().length/2][map.getMap().length/2];
+		
+		
+		
 	}
 	
-	public void render(Graphics g,int[] keys,Key w, Key a, Key s, Key d) {
+	public void render(Graphics g,int[] keys,Key w, Key a, Key s, Key d,Map map) {
 		this.w=w;
 		this.a=a;
 		this.s=s;
@@ -70,16 +77,13 @@ public class MC extends Entity {
 		}
 		
 		//computation(key);
-		System.out.println(key);
-		//moveMe(key,g);
+
+		//find middle of the map to draw the character
+		int xMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getX();
+		int yMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getY();
 		
-		g.drawImage(m.mcIdle[1], x, y, null);
-		
-		 for(int i=0;i<4;i++) {
-			 System.out.println(keys[i]);
-	 
-	 }
-		 System.out.println("-----");
+		g.drawImage(m.mcIdle[1], xMid, yMid, null);
+
 
 	}
 	
@@ -206,21 +210,24 @@ public class MC extends Entity {
 		
 		for (int i=0;i<12;i++) {
 			for(int o=0;o<12;o++) {
-				rofl[o][i]=new Tile(o*40,i*40);
+				rofl[o][i]=new Tile(o,i,o*40,i*40);
 			}
 		}
 		
-		rofl[0][0].setOccupied(true);
-		rofl[0][1].setDestination(true);
 		rofl[0][1].getX();
-		//rofl[tilePointerX] [tilePointerY].se
-		
-		
-		 
-		
-		
-		
-		
+		//rofl[tilePointerX] [tilePointerY].se	
+	}
+	
+	public void setLocation(int xLoc, int yLoc) {
+		this.xLoc=xLoc;
+		this.yLoc=yLoc;
+	}
+	
+	public void setTile(Tile tile) {
+		this.tile=tile;
+	}
+	public Tile getTile() {
+		return tile;
 	}
 	
 	
