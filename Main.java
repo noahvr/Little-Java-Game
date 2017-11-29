@@ -172,6 +172,7 @@ public class Main extends JFrame implements Runnable{
 					g.setColor(Color.WHITE);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					
+					map.edit();
 						//if no input
 							//Movement code
 						
