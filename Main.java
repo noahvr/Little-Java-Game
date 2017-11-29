@@ -168,22 +168,18 @@ public class Main extends JFrame implements Runnable{
 		while(!pause) {
 			do {
 				do {
-					Graphics g = buffer.getDrawGraphics();
-					g.setColor(Color.WHITE);
-					g.fillRect(0, 0, getWidth(), getHeight());
-					
-						//if no input
-							//Movement code
-						
-						//forced movement
-					key=0;
+					//TIME BASED
+					if(System.nanotime()-timer>40000000){
+						//parses input data
+						key=0;
 						for (int z=3;z>-1;z--) {
 							if(ican[z]!=0) {
 								key=ican[z];
 								break;
 							}
 						}
-						if(key!=0&&map.navigate(timer)) {
+						//moves character
+						if(key!=0) {
 							if(key==1&&map.nextTile(1, mc).isEmpty()==true) {
 								map.transform(0, 25);
 								mc.setTile(map.nextTile(1, mc));
@@ -202,12 +198,19 @@ public class Main extends JFrame implements Runnable{
 							}
 							timer=System.nanoTime();
 						}
-							
+					}
+					
+					//Visual code - ALWAYs renders
+					Graphics g = buffer.getDrawGraphics();
+					g.setColor(Color.WHITE);
+					g.fillRect(0, 0, getWidth(), getHeight());
+					
+					
+						
+					map.render(g,m);
 
-							map.render(g,m);
-
-							mc.render(g,ican,w,a,s,d,map);
-							System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
+					mc.render(g,ican,w,a,s,d,map);
+					System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
 
 				}while(buffer.contentsRestored());
 				
