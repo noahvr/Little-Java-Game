@@ -19,7 +19,6 @@ public class Map {
 	private Tile[][] map;
 	private int x;
 	private int y;
-	
 	private boolean navigate;
 	//Class Methods
 	
@@ -76,15 +75,17 @@ public class Map {
 		else if(System.nanoTime()-last>=.5*nanoseconds)return true;
 		else return false;
 	}
-	
-//	public Tile nextTile(int dir, MC mc) {
-//		
-//		if(dir==1)return this.getMap()[mc.getTile().getXLoc()][mc.getTile().getYLoc()-1];
-//		if(dir==2)return this.getMap()[mc.getTile().getXLoc()-1][mc.getTile().getYLoc()];
-//		if(dir==3)return this.getMap()[mc.getTile().getXLoc()][mc.getTile().getYLoc()+1];
-//		if(dir==4)return this.getMap()[mc.getTile().getXLoc()+1][mc.getTile().getYLoc()];
-//		else return null;
-//	}
+
+	public Tile nextTile(int dir, MC mc) {
+		try {
+			if(dir==1)return this.getMap()[mc.getTile().getcoords()[1]-1][mc.getTile().getcoords()[0]];
+			if(dir==2)return this.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]-1];
+			if(dir==3)return this.getMap()[mc.getTile().getcoords()[1]+1][mc.getTile().getcoords()[0]];
+			if(dir==4)return this.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]+1];
+		}
+		catch(Exception e) {return null;}
+		return null;
+	}
 	
 	public void edit() throws IOException {
 		String value="hi";
@@ -118,6 +119,9 @@ public class Map {
 			e.printStackTrace();
 		}
 		
+	}
+
+	public void place(Entity e, Tile t) {
 	}
 	public int getX() {
 		return x;

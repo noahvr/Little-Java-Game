@@ -158,12 +158,14 @@ public class Main extends JFrame implements Runnable{
 		
 		for (int i=0;i<11;i++) {
 			for(int o=0;o<11;o++) {
-				rofl[o][i]=new Tile(o*Tile.TILESIZE,i*Tile.TILESIZE);
+				rofl[i][o]=new Tile(o,i,o*Tile.TILESIZE,i*Tile.TILESIZE);
 			}
 		}
-		
+
 		Map map = new Map(11,11,rofl);
+
 		MC mc = new MC(125,125,map);
+		mc.setTile(map.getMap()[5][5]);
 		Models m = new Models();
 		m.loadAll();
 
@@ -199,21 +201,21 @@ public class Main extends JFrame implements Runnable{
 						//moves character
 						if(key!=0) {
 							if(mc.isFace(face)) {
-								if(key==1) {
+								if(key==1&&map.nextTile(key, mc)!=null) {
 									map.transform(0, Tile.TILESIZE);
-//									mc.setTile(map.nextTile(1, mc));
+									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]-1][mc.getTile().getcoords()[0]]);
 									}
-								if(key==2) {
+								if(key==2&&map.nextTile(key, mc)!=null) {
 									map.transform(Tile.TILESIZE, 0);
-//									mc.setTile(map.nextTile(2, mc));
+									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]-1]);
 								}
-								if(key==3) {
+								if(key==3&&map.nextTile(key, mc)!=null) {
 									map.transform(0, -Tile.TILESIZE);
-//									mc.setTile(map.nextTile(3, mc));
+									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]+1][mc.getTile().getcoords()[0]]);
 								}
-								if(key==4) {
+								if(key==4&&map.nextTile(key, mc)!=null) {
 									map.transform(-Tile.TILESIZE, 0);
-//									mc.setTile(map.nextTile(4, mc));
+									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]+1]);
 								}
 								
 							}

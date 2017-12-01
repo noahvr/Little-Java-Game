@@ -127,7 +127,7 @@ public class MapEditor implements MouseListener,Runnable{
 
 			for (int i=0;i<11;i++) {
 				for(int o=0;o<11;o++) {
-					rofl[i][o]=new Tile(o*Tile.TILESIZE,i*Tile.TILESIZE);
+					rofl[i][o]=new Tile(o,i,o*Tile.TILESIZE,i*Tile.TILESIZE);
 				}
 			}
 			

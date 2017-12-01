@@ -83,7 +83,7 @@ public class MC extends Entity {
 		int xMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getX();
 		int yMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getY();
 		
-		g.drawImage(m.mcIdle[1], (int)(Main.TILES_ON_SCREEN*Tile.TILESIZE/2-12.5),(int)(Main.TILES_ON_SCREEN*Tile.TILESIZE/2-12.5), null);
+		g.drawImage(m.mcIdle[1], getTile().getX(),getTile().getY(), null);
 
 
 	}
@@ -211,7 +211,7 @@ public class MC extends Entity {
 		
 		for (int i=0;i<12;i++) {
 			for(int o=0;o<12;o++) {
-				rofl[o][i]=new Tile(o*40,i*40);
+				rofl[o][i]=new Tile(o,i,o*40,i*40);
 			}
 		}
 		
@@ -224,8 +224,17 @@ public class MC extends Entity {
 		this.yLoc=yLoc;
 	}
 	
+	public int[] getTileCoords() {
+		int[] a=new int[2];
+		a[0]=xLoc;
+		a[1]=yLoc;
+		return a;
+	}
+	
 	public void setTile(Tile tile) {
 		this.tile=tile;
+		xLoc=tile.getcoords()[0];
+		yLoc=tile.getcoords()[1];
 	}
 	public Tile getTile() {
 		return tile;

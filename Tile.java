@@ -11,7 +11,8 @@ public class Tile {
 	private int y;
 	private int absx;
 	private int absy;
-
+	private final int xLoc;
+	private final int yLoc;
 	private int width=25;
 	private int height=25;
 	private BufferedImage image;
@@ -21,13 +22,15 @@ public class Tile {
 	public static final int TILESIZE=25;
 	
 	public Tile() {
-		this(0,0);
+		this(0,0,0,0);
 	}
-	public Tile(int x, int y) {
+	public Tile(int xLoc, int yLoc,int x, int y) {
 		this.x=x;
 		this.y=y;
 		absx=x;
 		absy=y;
+		this.xLoc=xLoc;
+		this.yLoc=yLoc;
 
 		width=TILESIZE;
 		height=TILESIZE;
@@ -95,5 +98,11 @@ public class Tile {
 	}
 	public int getabsx() {
 		return absx;
+	}
+	public int[] getcoords() {
+		int[]a=new int[2];
+		a[0]=xLoc;
+		a[1]=yLoc;
+		return a;
 	}
 }
