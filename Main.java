@@ -21,12 +21,17 @@ public class Main extends JFrame implements Runnable{
 	Key w,a,s,d;
 	int[] ican;
 	int[] forcedmove;
+	private int tick=0;
+	static final int TILES_ON_SCREEN=11;
+	
+	int face;
 	public Main() {
 		w=new Key(0,'w');
 		a=new Key(0,'a');
 		s=new Key(0,'s');
 		d=new Key(0,'d');
-	
+		face=1;
+		setBounds(0,0,Tile.TILESIZE*TILES_ON_SCREEN,Tile.TILESIZE*TILES_ON_SCREEN);
 	}
 	public void run() {
 		try {
@@ -47,7 +52,7 @@ public class Main extends JFrame implements Runnable{
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 				
-		setBounds(0,0,275,275);
+		
 		
 		setLocationRelativeTo(null);
 		
@@ -153,7 +158,7 @@ public class Main extends JFrame implements Runnable{
 		
 		for (int i=0;i<11;i++) {
 			for(int o=0;o<11;o++) {
-				rofl[o][i]=new Tile(o,i,o*25,i*25);
+				rofl[o][i]=new Tile(o*Tile.TILESIZE,i*Tile.TILESIZE);
 			}
 		}
 		
@@ -163,59 +168,97 @@ public class Main extends JFrame implements Runnable{
 		m.loadAll();
 
 		pack();
-		int key;
-		long timer=System.nanoTime();
+		
+		
+		int key=0;
+		long timeAtLastUpdate=0;	
+		int face=0;
+		long uncountedtime=System.nanoTime();
+		float highest=0f;
+		float lowest=0f;
 		while(!pause) {
 			do {
 				do {
-					Graphics g = buffer.getDrawGraphics();
-					g.setColor(Color.WHITE);
-					g.fillRect(0, 0, getWidth(), getHeight());
-					
-					map.edit();
-						//if no input
-							//Movement code
-						
-						//forced movement
-					key=0;
-						for (int z=3;z>-1;z--) {
+					for (int z=3;z>-1;z--) {
 							if(ican[z]!=0) {
 								key=ican[z];
 								break;
 							}
 						}
-						if(key!=0&&map.navigate(timer)) {
-							if(key==1&&map.nextTile(1, mc).isEmpty()==true) {
-								map.transform(0, 25);
-								mc.setTile(map.nextTile(1, mc));
+					//TIME BASED 10 ticks per second
+					
+
+//					if(toSec(System.nanoTime()-uncountedtime)>highest)highest=(float)toSec(System.nanoTime()-uncountedtime);
+//					if(toSec(System.nanoTime()-uncountedtime)<lowest)lowest=(float)toSec(System.nanoTime()-uncountedtime);
+//					System.out.println("HIGHEST:/t"+highest);
+//					System.out.println("LOWEST:/t"+lowest);
+//					uncountedtime=System.nanoTime();
+					
+					if(System.nanoTime()-timeAtLastUpdate>toNano(.1f)){
+						//parses input data
+						//moves character
+						if(key!=0) {
+							if(mc.isFace(face)) {
+								if(key==1) {
+									map.transform(0, Tile.TILESIZE);
+//									mc.setTile(map.nextTile(1, mc));
+									}
+								if(key==2) {
+									map.transform(Tile.TILESIZE, 0);
+//									mc.setTile(map.nextTile(2, mc));
+								}
+								if(key==3) {
+									map.transform(0, -Tile.TILESIZE);
+//									mc.setTile(map.nextTile(3, mc));
+								}
+								if(key==4) {
+									map.transform(-Tile.TILESIZE, 0);
+//									mc.setTile(map.nextTile(4, mc));
+								}
+								
 							}
-							if(key==2&&map.nextTile(2, mc).isEmpty()==true) {
-								map.transform(25, 0);
-								mc.setTile(map.nextTile(2, mc));
-							}
-							if(key==3&&map.nextTile(3, mc).isEmpty()==true) {
-								map.transform(0, -25);
-								mc.setTile(map.nextTile(3, mc));
-							}
-							if(key==4&&map.nextTile(4, mc).isEmpty()==true) {
-								map.transform(-25, 0);
-								mc.setTile(map.nextTile(4, mc));
-							}
-							timer=System.nanoTime();
-						}
+							else face=key;
+								
+								
 							
+						}
+						timeAtLastUpdate=System.nanoTime();
+						key=0;
+						tick++;
+						
+					}
+					//System.out.println(face);
+					//Visual code - ALWAYs renders
+					Graphics g = buffer.getDrawGraphics();
+					g.setColor(Color.WHITE);
+					g.fillRect(0, 0, getWidth(), getHeight());
+					
+					
+						
+					map.render(g,m);
 
-							map.render(g,m);
-
-							mc.render(g,ican,w,a,s,d,map);
-							System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
-
+					mc.render(g,ican,w,a,s,d,map);
+//System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
 				}while(buffer.contentsRestored());
 				
 				buffer.show();
 				
 			}while(buffer.contentsLost());
 		}
+	}
+	
+	public float toNano(float seconds) {
+		float millesec=seconds*1000;
+		float microsec=millesec*1000;
+		float nanosec=microsec*1000;
+		return nanosec;
+	}
+	
+	public float toSec(float nano) {
+		float micro=nano/1000;
+		float milli=micro/1000;
+		float sec=milli/1000;
+		return sec;
 	}
 	
 	//change variables

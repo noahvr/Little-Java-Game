@@ -9,27 +9,28 @@ import javax.imageio.ImageIO;
 public class Tile {
 	private int x;
 	private int y;
+	private int absx;
+	private int absy;
 
-	static int xmeme;
-	static int ymeme;
 	private int width=25;
 	private int height=25;
 	private BufferedImage image;
 	private BufferedImage newImage= new BufferedImage(width,height,1);
 	private boolean isEmpty;
-	private int xLoc;
-	private int yLoc;
+
+	public static final int TILESIZE=25;
 	
 	public Tile() {
-		this(0,0,0,0);
+		this(0,0);
 	}
-	public Tile(int xLoc, int yLoc, int x, int y) {
+	public Tile(int x, int y) {
 		this.x=x;
 		this.y=y;
-		this.xLoc=xLoc;
-		this.yLoc=yLoc;
-		width=25;
-		height=25;
+		absx=x;
+		absy=y;
+
+		width=TILESIZE;
+		height=TILESIZE;
 		
 		isEmpty=true;
 
@@ -50,20 +51,14 @@ public class Tile {
 	
 
 	public int getY() {
-		return y+ymeme;
+		return y;
 	}
 
 	public int getX() {
-		return x+xmeme;
+		return x;
 	}
 
-	
-	public void setX(int x) {
-		this.x=x;
-	}
-	public void setY(int y) {
-		this.y=y;
-	}
+
 	
 	public void render(Graphics g,int x, int y, Models m) {
 		g.drawImage(newImage, x, y, null);
@@ -88,11 +83,17 @@ public class Tile {
 	public void setEmpty(boolean isEmpty) {
 		this.isEmpty=isEmpty;
 	}
-	public int getXLoc() {
-		return xLoc;
+
+	public boolean isOn(int x, int y) {
+		if(x-this.x<TILESIZE&&x-this.x>=0) {
+			if(y-this.y<TILESIZE&&y-this.y>=0)return true;
+		}
+		return false;
 	}
-	
-	public int getYLoc(){
-		return yLoc;
+	public int getabsy() {
+		return absy;
+	}
+	public int getabsx() {
+		return absx;
 	}
 }

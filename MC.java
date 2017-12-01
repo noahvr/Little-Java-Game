@@ -38,6 +38,7 @@ public class MC extends Entity {
 	private int tilePointerX=0;
 	private int tilePointerY=0;
 	private Tile tile;
+	private int lastFace=1;
 	
 	public MC() throws IOException{
 		
@@ -82,7 +83,7 @@ public class MC extends Entity {
 		int xMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getX();
 		int yMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getY();
 		
-		g.drawImage(m.mcIdle[1], xMid, yMid, null);
+		g.drawImage(m.mcIdle[1], (int)(Main.TILES_ON_SCREEN*Tile.TILESIZE/2-12.5),(int)(Main.TILES_ON_SCREEN*Tile.TILESIZE/2-12.5), null);
 
 
 	}
@@ -102,17 +103,17 @@ public class MC extends Entity {
 		else {
 			curtime=System.nanoTime();
 			if(key==1&&yLock!=-1) {
-				y--;direction=1;pixMoved++;curSprite=m.mcUp;
+				direction=1;pixMoved++;curSprite=m.mcUp;
 				
 			}
 			if(key==2&&xLock!=-1) {
-				x--;direction=2;pixMoved++;curSprite=m.mcLeft;
+				direction=2;pixMoved++;curSprite=m.mcLeft;
 			}
 			if(key==3&&yLock!=1) {
-				y++;direction=3;pixMoved++;curSprite=m.mcDown;
+				direction=3;pixMoved++;curSprite=m.mcDown;
 			}
 			if(key==4&&xLock!=1) {
-				x++;direction=4;pixMoved++;curSprite=m.mcRight;
+				direction=4;pixMoved++;curSprite=m.mcRight;
 			}
 			
 			
@@ -210,7 +211,7 @@ public class MC extends Entity {
 		
 		for (int i=0;i<12;i++) {
 			for(int o=0;o<12;o++) {
-				rofl[o][i]=new Tile(o,i,o*40,i*40);
+				rofl[o][i]=new Tile(o*40,i*40);
 			}
 		}
 		
@@ -228,6 +229,14 @@ public class MC extends Entity {
 	}
 	public Tile getTile() {
 		return tile;
+	}
+	
+	public boolean isFace(int face) {
+		if(lastFace==face)return true;
+		else{
+			lastFace=face;
+			return false;
+		}
 	}
 	
 	

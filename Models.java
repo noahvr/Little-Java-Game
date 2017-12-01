@@ -20,6 +20,10 @@ public class Models {
 	public BufferedImage[]mcDown;
 	public BufferedImage[]mcLeft;
 	public BufferedImage[]mcRight;
+	public static BufferedImage[][]tiles;
+	public BufferedImage tileset;
+	public BufferedImage iconset;
+	public BufferedImage [][]icons;
 	
 	
 	public Models() {
@@ -58,7 +62,27 @@ public class Models {
 			mcLeft[x]=clip(pokemon,343,173+25*x,23,25);
 		}
 		
+		File f=new File("src/field/tiles-small.png");
+		System.out.println(f.exists());
+		tileset=ImageIO.read(f);
+		int tilesetH=tileset.getHeight()/Tile.TILESIZE;
+		int tilesetW=tileset.getWidth()/Tile.TILESIZE;
+		tiles=new BufferedImage[tilesetH][tilesetW];
+		for(int y=0;y<tilesetH;y++) {
+			for(int x=0;x<tilesetW;x++) {
+				tiles[y][x]=clip(tileset,x*Tile.TILESIZE,y*Tile.TILESIZE,Tile.TILESIZE,Tile.TILESIZE);
+			}
+		}
 		
+		iconset=ImageIO.read(Models.class.getResource("24squareicon.png"));
+		int iconsetH=iconset.getHeight()/34;
+		int iconsetW=iconset.getWidth()/34;
+		icons=new BufferedImage[iconsetH][iconsetW];
+		for(int y=0;y<iconsetH;y++) {
+			for(int x=0;x<iconsetW;x++) {
+				icons[y][x]=clip(iconset,x*34,y*34,24,24);
+			}
+		}
 		
 		
 	}
