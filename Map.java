@@ -107,7 +107,7 @@ public class Map {
 			for(int y=0;y<Math.sqrt(getMap().length);y++) {
 				for(int x=0;x<Math.sqrt(getMap().length);x++) {
 					b=ImageIO.read((getClass().getResource(st.sval)));
-					getMap()[y][x].setImage(b);
+					//getMap()[y][x].setImage(b),b.;
 				}
 			}
 			}

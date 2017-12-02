@@ -1,9 +1,9 @@
 package field;
 
+import java.awt.Color;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -95,15 +95,25 @@ public class Models {
 		try {
 			GraphicsDevice screen = ge.getDefaultScreenDevice();
 			GraphicsConfiguration gc= screen.getDefaultConfiguration();
-			newImage = gc.createCompatibleImage(w, h, Transparency.BITMASK);			
+			newImage = gc.createCompatibleImage(w, h, BufferedImage.TYPE_INT_ARGB);			
 		}
 		catch(Exception e){}
 		if(newImage==null) {
-			newImage = new BufferedImage(w,h,Transparency.BITMASK);
+			newImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
 		}
 		
 		int[]pixels=new int[w*h];
 		src.getRGB(x, y, w, h, pixels, 0, w);
+		if(src.getHeight()>=200) {
+			Color c=new Color(src.getRGB(0, 200),true);
+			for(int i=0;i<pixels.length;i++) {
+			if(pixels[i]==c.getRGB()) {
+				pixels[i]=c.getRGB();
+				//System.out.println("TEHTAWFE");
+			}
+		}
+		}
+		
 		newImage.setRGB(0, 0, w,h,pixels,0,w);
 		return newImage;
 	}

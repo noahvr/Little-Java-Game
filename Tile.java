@@ -4,9 +4,12 @@ package field;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
+
 import javax.imageio.ImageIO;
 
 public class Tile {
+
 	private int x;
 	private int y;
 	private int absx;
@@ -18,6 +21,7 @@ public class Tile {
 	private BufferedImage image;
 	private BufferedImage newImage= new BufferedImage(width,height,1);
 	private boolean isEmpty;
+	String imageName;
 
 	public static final int TILESIZE=25;
 	
@@ -67,13 +71,20 @@ public class Tile {
 		g.drawImage(newImage, x, y, null);
 	
 	}
-	public void setImage(BufferedImage image) {
+	public void setImage(BufferedImage image, String imageName) {
 		this.image=image;
 			for(int i=0;i<height;i++) {
 				for(int j=0;j<width;j++){
 					newImage.setRGB(j, i, image.getRGB(j, i));
 			}
 		}
+		this.imageName=imageName;
+	}
+	public BufferedImage getImage() {
+		return newImage;
+	}
+	public String getImageName() {
+		return imageName;
 	}
 	public void transform(int dx, int dy) {
 		this.x=x+dx;

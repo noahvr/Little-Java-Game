@@ -6,7 +6,12 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JFrame;
 
@@ -67,6 +72,7 @@ public class MapEditor implements MouseListener,Runnable{
 
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
+			System.out.println(e.getButton());
 			if(e.getX()<=575) {
 				for(int y=0;y<29;y++) {
 					for(int x=0;x<23;x++) {
@@ -83,7 +89,7 @@ public class MapEditor implements MouseListener,Runnable{
 			else {
 				//map.getMap()[e.getY()/Tile.TILESIZE][(e.getX()-32)/Tile.TILESIZE].setImage(curIm);
 //				System.out.println(e.getX()+" "+e.getY());
-//				System.out.println(map.getMap()[10][10].getX()+" "+map.getMap()[10][10].getY());
+//				System.out.println(map.getMap()[10][10].getX()
 				for(int y=0;y<11;y++) {
 					for(int x=0;x<11;x++) {
 						if(map.getMap()[y][x].isOn(e.getX(), e.getY())) {
@@ -95,6 +101,37 @@ public class MapEditor implements MouseListener,Runnable{
 				}
 				//System.out.println(map.getMap()[e.getY()/32+1][(e.getX()-32)/32+1].getYLoc()+" "+map.getMap()[e.getY()/32+1][(e.getX()-32)/32+1].getXLoc());
 			}
+			if(e.getButton()==3) {
+				String[][] hi=new String[11][11];
+
+				for(int i=0;i<11;i++) {
+					for(int j=0;j<11;j++) {
+						hi[i][j]=rofl[1][1].get;
+					}
+					
+				}
+				FileOutputStream fout;
+				try {
+					fout = new FileOutputStream("ok.txt");
+					ObjectOutputStream oout= new ObjectOutputStream(fout);	
+					oout.writeObject(hi);
+					oout.close();
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
+			
+
+				
+				
+				}
+			
+			
 			
 		
 	}
