@@ -1,5 +1,6 @@
 package field;
 
+import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
@@ -9,9 +10,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.StreamTokenizer;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 public class Map {
 	private int width;
@@ -24,8 +28,8 @@ public class Map {
 	
 	//Instance Methods
 	public void transform(int x, int y) {
-		for(int y1=0;y1<11;y1++) {
-			for(int x1=0;x1<11;x1++) {
+		for(int y1=0;y1<height;y1++) {
+			for(int x1=0;x1<width;x1++) {
 				getMap()[y1][x1].transform(x, y);
 			}
 		}
@@ -34,8 +38,41 @@ public class Map {
 	public Map() {
 		
 	}
-	public Map(File f) {
+	public Map(String file) throws IOException, ClassNotFoundException {
+		Object o;
 		
+		BufferedImage image=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage emptyimage=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
+		FileInputStream fin=new FileInputStream(file);
+		ObjectInputStream oin=new ObjectInputStream(fin);
+		int[]pixels =new int[25*25];
+		int[]emptypixels=new int [25*25];
+		width=oin.readInt();
+		height=oin.readInt();
+		
+		map=new Tile[height][width];
+		
+		for (int i=0;i<height;i++) {
+			for(int j=0;j<width;j++) {
+				map[i][j]=new Tile(j,i,j*Tile.TILESIZE,i*Tile.TILESIZE);
+			}
+		}
+		for(int y=0;y<width;y++) {
+			for(int x=0;x<height;x++) {
+				o=oin.readObject();
+				for(int i=0;i<((int[])o).length;i++){
+					System.out.println(((int[])o)[i]);
+				}
+				System.out.println("------------");
+				pixels=((int[])o).clone();
+				image.setRGB(0, 0, 25, 25, pixels, 0,25);
+				getMap()[y][x].setImage(image, "aaa");
+				
+				pixels=emptypixels.clone();
+				
+				image.setRGB(0, 0, 25, 25, emptypixels, 0, 25);
+			}
+		}
 	}
 	public Map(int width, int height, Tile[][] map) {
 		this.width=width;
@@ -58,10 +95,10 @@ public class Map {
 	public Tile[][] getMap(){
 		return map;
 	}
-	public void render(Graphics g, Models m) {
+	public void render(Graphics g) {
 		for(int i=0;i<height;i++) {
 			for(int z=0;z<width;z++) {
-				map[i][z].render(g, map[i][z].getX(), map[i][z].getY(), m);
+				map[i][z].render(g, map[i][z].getX(), map[i][z].getY());
 			}
 		}
 	}
@@ -95,28 +132,31 @@ public class Map {
 		outStream.close();
 	}
 	
-	public void load(File f) {
+	public void load(String file) throws IOException, ClassNotFoundException {
 
-		try {
-			
-			StreamTokenizer st=new StreamTokenizer(new FileInputStream(f));
-			st.whitespaceChars(';',';');
-			BufferedImage b;
-			int token;
-			while((token=st.nextToken())!=st.TT_EOF) {
-			for(int y=0;y<Math.sqrt(getMap().length);y++) {
-				for(int x=0;x<Math.sqrt(getMap().length);x++) {
-					b=ImageIO.read((getClass().getResource(st.sval)));
-					getMap()[y][x].setImage(b);
+		Object o;
+		
+		BufferedImage image=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage emptyimage=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
+		FileInputStream fin=new FileInputStream(file);
+		ObjectInputStream oin=new ObjectInputStream(fin);
+		int[]pixels =new int[25*25];
+		int[]emptypixels=new int [25*25];
+		for(int y=0;y<11;y++) {
+			for(int x=0;x<11;x++) {
+				o=oin.readObject();
+				for(int i=0;i<((int[])o).length;i++){
+					System.out.println(((int[])o)[i]);
 				}
+				System.out.println("------------");
+				pixels=((int[])o).clone();
+				image.setRGB(0, 0, 25, 25, pixels, 0,25);
+				getMap()[y][x].setImage(image, "aaa");
+				
+				pixels=emptypixels.clone();
+				
+				image.setRGB(0, 0, 25, 25, emptypixels, 0, 25);
 			}
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 	}

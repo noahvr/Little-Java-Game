@@ -6,17 +6,24 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 
 public class MapEditor implements MouseListener,Runnable{
 		JFrame frame=new JFrame();
-
+		private int mapX;
+		private int mapY;
 		private Canvas canvas=new Canvas();
 		Main main= new Main();
-		Tile [][] rofl=new Tile[11][11];
-		Map map = new Map(11,11,rofl);
+		Tile [][] rofl;
+		Map map;
 		private int tileup=0;
 		private int tileside=1;
 		Models m = new Models();
@@ -36,6 +43,13 @@ public class MapEditor implements MouseListener,Runnable{
 			}
 		//first thing of the game
 		public void start() throws IOException {
+			Scanner scan=new Scanner(System.in);
+			System.out.println("Enter the width of your new map");
+			mapX=scan.nextInt();
+			System.out.println("Enter the height of your new map");
+			mapY=scan.nextInt();
+			rofl=new Tile[mapY][mapX];
+			map = new Map(mapX,mapY,rofl);
 			initialize();
 			input();
 		}
@@ -44,8 +58,8 @@ public class MapEditor implements MouseListener,Runnable{
 			m.loadAll();
 			
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					
-			frame.setBounds(0,0,736+main.getWidth(),928);
+			if(mapY*Tile.TILESIZE>928)	frame.setBounds(0,0,600+mapX*Tile.TILESIZE,mapY*Tile.TILESIZE);		
+			else frame.setBounds(0,0,600+mapX*Tile.TILESIZE,928);
 			
 			frame.setLocationRelativeTo(null);
 			
@@ -67,12 +81,13 @@ public class MapEditor implements MouseListener,Runnable{
 
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
+			System.out.println(e.getButton());
 			if(e.getX()<=575) {
 				for(int y=0;y<29;y++) {
 					for(int x=0;x<23;x++) {
 						if((e.getY()-y*Tile.TILESIZE<Tile.TILESIZE&&e.getY()-y*Tile.TILESIZE>=0)&&(e.getX()-x*Tile.TILESIZE<32&&e.getX()-x*Tile.TILESIZE>=0)) {
 							curIm=Models.tiles[y][x];
-							System.out.println(curIm);
+							//System.out.println(curIm);
 							return;
 						}
 					}
@@ -83,20 +98,47 @@ public class MapEditor implements MouseListener,Runnable{
 			else {
 				//map.getMap()[e.getY()/Tile.TILESIZE][(e.getX()-32)/Tile.TILESIZE].setImage(curIm);
 //				System.out.println(e.getX()+" "+e.getY());
-//				System.out.println(map.getMap()[10][10].getX()+" "+map.getMap()[10][10].getY());
-				for(int y=0;y<11;y++) {
-					for(int x=0;x<11;x++) {
+//				System.out.println(map.getMap()[10][10].getX()
+				for(int y=0;y<mapY;y++) {
+					for(int x=0;x<mapX;x++) {
 						if(map.getMap()[y][x].isOn(e.getX(), e.getY())) {
-							map.getMap()[y][x].setImage(curIm);
+							map.getMap()[y][x].setImage(curIm,"MEME");
 							return;
 						}
-						System.out.println(map.getMap()[y][x].getX());
+						//System.out.println(map.getMap()[y][x].getX());
 					}
 				}
 				//System.out.println(map.getMap()[e.getY()/32+1][(e.getX()-32)/32+1].getYLoc()+" "+map.getMap()[e.getY()/32+1][(e.getX()-32)/32+1].getXLoc());
 			}
+			if(e.getButton()==3) {
+				Scanner scan=new Scanner(System.in);
+				System.out.println("Please enter the name of the save file use txt");
+				String saveF=scan.next();
+				scan.close();
+//				Models m=new Models();
+//				m.loadAll();
 			
-		
+				
+				int[] pixels=new int[25*25];
+				int[] emptypixels=new int[25*25];
+				try {
+				FileOutputStream fout=new FileOutputStream(saveF);
+				ObjectOutputStream oout=new ObjectOutputStream(fout);
+				oout.writeInt(mapX);
+				oout.writeInt(mapY);
+				for(int y=0;y<mapY;y++) {
+					for(int x=0;x<mapX;x++) {
+						rofl[y][x].getImage().getRGB(0, 0, 25, 25, pixels, 0,25);
+						//System.out.println(pixels);
+						oout.writeObject(pixels);
+						pixels=emptypixels.clone();
+					}
+				}
+				oout.close();
+				}
+				catch(Exception e1) {}
+			}
+	
 	}
 		@Override	
 		public void mouseEntered(MouseEvent arg0) {
@@ -125,8 +167,8 @@ public class MapEditor implements MouseListener,Runnable{
 
 			canvas.addMouseListener(this);
 
-			for (int i=0;i<11;i++) {
-				for(int o=0;o<11;o++) {
+			for (int i=0;i<mapY;i++) {
+				for(int o=0;o<mapX;o++) {
 					rofl[i][o]=new Tile(o,i,o*Tile.TILESIZE,i*Tile.TILESIZE);
 				}
 			}
@@ -135,7 +177,7 @@ public class MapEditor implements MouseListener,Runnable{
 
 			m.loadAll();
 			Graphics g = canvas.getGraphics();
-			map.transform(726,0);
+			map.transform(580,0);
 			
 			//frame 2
 			
@@ -144,7 +186,7 @@ public class MapEditor implements MouseListener,Runnable{
 				//frame 1	
 				
 				
-				map.render(g, m);
+				map.render(g);
 				g.setColor(Color.white);
 				
 			
@@ -155,7 +197,7 @@ public class MapEditor implements MouseListener,Runnable{
 					}
 				}
 				//System.out.println(map.getMap()[0][1].getXLoc()+" "+map.getMap()[0][1].getYLoc());
-			if(curIm!=null)g.drawImage(curIm, frame.getWidth()*3/4, frame.getHeight()*3/4, null);
+			if(curIm!=null)g.drawImage(curIm, 200, frame.getHeight()*3/4, null);
 			}
 			
 			}

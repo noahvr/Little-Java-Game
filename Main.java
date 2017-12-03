@@ -39,10 +39,13 @@ public class Main extends JFrame implements Runnable{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	//first thing of the game
-	public void start() throws IOException {
+	public void start() throws IOException, ClassNotFoundException {
 		initialize();
 		input();
 	}
@@ -149,21 +152,26 @@ public class Main extends JFrame implements Runnable{
 		canvas.addKeyListener(key);
 	}
 	
-	public void input() throws IOException {
+	public void input() throws IOException, ClassNotFoundException {
 		
 		//fix the screen not having the right amount of pixels
 		canvas.setPreferredSize(getSize());
 		forcedmove=new int[4];
-		Tile [][] rofl=new Tile[11][11];
-		
-		for (int i=0;i<11;i++) {
-			for(int o=0;o<11;o++) {
-				rofl[i][o]=new Tile(o,i,o*Tile.TILESIZE,i*Tile.TILESIZE);
-			}
-		}
+//		Tile [][] rofl=new Tile[11][11];
+//		
+//		for (int i=0;i<11;i++) {
+//			for(int o=0;o<11;o++) {
+//				rofl[i][o]=new Tile(o,i,o*Tile.TILESIZE,i*Tile.TILESIZE);
+//			}
+//		}
 
-		Map map = new Map(11,11,rofl);
-
+		Map map = new Map("beachhouse.txt");
+//		try {
+//			map.load("20.txt");
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		MC mc = new MC(125,125,map);
 		mc.setTile(map.getMap()[5][5]);
 		Models m = new Models();
@@ -237,7 +245,7 @@ public class Main extends JFrame implements Runnable{
 					
 					
 						
-					map.render(g,m);
+					map.render(g);
 
 					mc.render(g,ican,w,a,s,d,map);
 //System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
