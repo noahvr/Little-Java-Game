@@ -25,10 +25,14 @@ public class TESTER2 {
 		
 		BufferedImage image=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
 		BufferedImage emptyimage=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
-		FileInputStream fin=new FileInputStream("try4.txt");
+		FileInputStream fin=new FileInputStream("556.txt");
 		ObjectInputStream oin=new ObjectInputStream(fin);
 		int[]pixels =new int[25*25];
 		int[]emptypixels=new int [25*25];
+		int height=oin.readInt();
+		int weight=oin.readInt();
+		System.out.println(height+" "+weight);
+
 		for(int y=0;y<11;y++) {
 			for(int x=0;x<11;x++) {
 				o=oin.readObject();
@@ -38,7 +42,7 @@ public class TESTER2 {
 				System.out.println("------------");
 				pixels=((int[])o).clone();
 				image.setRGB(0, 0, 25, 25, pixels, 0,25);
-				t[y][x].setImage(image, "aaa");
+				t[x][y].setImage(image, "aaa");
 				
 				pixels=emptypixels.clone();
 				
@@ -59,7 +63,7 @@ public class TESTER2 {
 		}
 		catch(Exception e) {}
 
-		map.render(g, m);
+		map.render(g);
 		
 		
 		//WORKS DONT BREAK

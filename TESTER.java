@@ -12,6 +12,10 @@ public class TESTER {
 		Scanner scan=new Scanner(System.in);
 		System.out.println("Please enter the name of the save file use txt");
 		String saveF=scan.nextLine();
+//		System.out.println("Please enter the width of the save file");
+//		int width=scan.nextInt();
+//		System.out.println("Please enter the height of the save file");
+//		int height=scan.nextInt();
 		scan.close();
 		Models m=new Models();
 		m.loadAll();
@@ -30,6 +34,8 @@ public class TESTER {
 		int[] emptypixels=new int[25*25];
 		FileOutputStream fout=new FileOutputStream(saveF);
 		ObjectOutputStream oout=new ObjectOutputStream(fout);
+		oout.writeInt(11);
+		oout.writeInt(11);
 		for(int y=0;y<11;y++) {
 			for(int x=0;x<11;x++) {
 				t[y][x].getImage().getRGB(0, 0, 25, 25, pixels, 0,25);

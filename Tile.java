@@ -67,7 +67,7 @@ public class Tile {
 
 
 	
-	public void render(Graphics g,int x, int y, Models m) {
+	public void render(Graphics g,int x, int y) {
 		g.drawImage(newImage, x, y, null);
 	
 	}
