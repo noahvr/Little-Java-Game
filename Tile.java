@@ -19,8 +19,10 @@ public class Tile {
 	private int width=25;
 	private int height=25;
 	private BufferedImage image;
-	private BufferedImage newImage= new BufferedImage(width,height,1);
+	private BufferedImage pastImage;
+	private BufferedImage newImage= new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
 	private boolean isEmpty;
+	private boolean showPastImage=false;
 	String imageName;
 
 	public static final int TILESIZE=25;
@@ -52,6 +54,7 @@ public class Tile {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		pastImage=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
 		
 	}
 	
@@ -68,10 +71,16 @@ public class Tile {
 
 	
 	public void render(Graphics g,int x, int y) {
+		if(showPastImage)g.drawImage(pastImage, x, y, null);
 		g.drawImage(newImage, x, y, null);
 	
 	}
 	public void setImage(BufferedImage image, String imageName) {
+		for(int i=0;i<height;i++) {
+			for(int j=0;j<width;j++){
+				pastImage.setRGB(j, i, newImage.getRGB(j, i));
+				}
+			}
 		this.image=image;
 			for(int i=0;i<height;i++) {
 				for(int j=0;j<width;j++){
@@ -79,6 +88,27 @@ public class Tile {
 			}
 		}
 		this.imageName=imageName;
+		
+	}
+	
+	public void setImage(BufferedImage image, Boolean opaque) {
+		if(!opaque) {
+		for(int i=0;i<height;i++) {
+			for(int j=0;j<width;j++){
+				pastImage.setRGB(j, i, newImage.getRGB(j, i));
+				}
+			}
+		}
+		else {
+			pastImage=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+		}
+		this.image=image;
+			for(int i=0;i<height;i++) {
+				for(int j=0;j<width;j++){
+					newImage.setRGB(j, i, image.getRGB(j, i));
+			}
+		}
+		
 	}
 	public BufferedImage getImage() {
 		return newImage;
@@ -115,5 +145,34 @@ public class Tile {
 		a[0]=xLoc;
 		a[1]=yLoc;
 		return a;
+	}
+	public void showPastImage(boolean show) {
+		showPastImage=show;
+	}
+	
+	public int[] moveToTile(Tile tile) {
+		//goes through all points that are not on the actual tiles
+		int[] moves=new int[24];
+		if(tile.getX()>getX()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=tile.getX()+i+1;
+			}
+		}
+		else if(tile.getX()<getX()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=tile.getX()+i+1;
+			}
+		}
+		else if(tile.getY()>getY()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=tile.getX()+i+1;
+			}
+		}
+		else if(tile.getY()<getY()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=tile.getY()+i+1;
+			}
+		}
+		return moves;
 	}
 }

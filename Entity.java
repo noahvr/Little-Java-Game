@@ -36,7 +36,31 @@ public class Entity {
 	public int getY() {
 		return y;
 	}
-	
+	public int[] moveToTile(Tile tile) {
+		//goes through all points that are not on the actual tiles
+		int[] moves=new int[24];
+		if(tile.getX()>this.getX()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=this.getX()+i+1;
+			}
+		}
+		else if(tile.getX()<this.getX()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=this.getX()-i-1;
+			}
+		}
+		else if(tile.getY()>this.getY()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=this.getY()+i+1;
+			}
+		}
+		else if(tile.getY()<this.getY()) {
+			for(int i=0;i<moves.length;i++) {
+				moves[i]=this.getY()-i-1;
+			}
+		}
+		return moves;
+	}
 	
 	
 	

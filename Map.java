@@ -24,6 +24,9 @@ public class Map {
 	private int x;
 	private int y;
 	private boolean navigate;
+	public int lock;
+	private int panPix=1;
+	private Entity[] a;
 	//Class Methods
 	
 	//Instance Methods
@@ -36,9 +39,10 @@ public class Map {
 	}
 	//
 	public Map() {
-		
+		lock=0;
 	}
 	public Map(String file) throws IOException, ClassNotFoundException {
+		lock=0;
 		Object o;
 		
 		BufferedImage image=new BufferedImage(25,25,BufferedImage.TYPE_INT_ARGB);
@@ -61,9 +65,7 @@ public class Map {
 			for(int x=0;x<height;x++) {
 				o=oin.readObject();
 				for(int i=0;i<((int[])o).length;i++){
-					System.out.println(((int[])o)[i]);
 				}
-				System.out.println("------------");
 				pixels=((int[])o).clone();
 				image.setRGB(0, 0, 25, 25, pixels, 0,25);
 				getMap()[y][x].setImage(image, "aaa");
@@ -82,6 +84,7 @@ public class Map {
 
 		this.map=map.clone();
 		navigate = true;
+		lock= 0;
 	}
 	
 	public void lolzer() {
@@ -146,9 +149,7 @@ public class Map {
 			for(int x=0;x<11;x++) {
 				o=oin.readObject();
 				for(int i=0;i<((int[])o).length;i++){
-					System.out.println(((int[])o)[i]);
 				}
-				System.out.println("------------");
 				pixels=((int[])o).clone();
 				image.setRGB(0, 0, 25, 25, pixels, 0,25);
 				getMap()[y][x].setImage(image, "aaa");
@@ -169,4 +170,78 @@ public class Map {
 	public int getY() {
 		return y;
 	}
+	
+	public void pan(int xTiles,int yTiles,int dir, int key, MC mc) {
+		//1 up 2 left 3 down 4 right
+		lock=dir;
+		switch(lock) {
+		case 1:if (mc.getTile().getcoords()[1]==0 ) {
+					panPix=1;
+					lock=0;
+					return;
+				}
+				break;
+		case 2:if (mc.getTile().getcoords()[0]==0) {
+					panPix=1;
+					lock=0;
+					return;
+		}
+				break;
+		
+		case 3:if (mc.getTile().getcoords()[1]==height-1) {
+					panPix=1;
+					lock=0;
+					return;
+		}
+				break;
+		
+		case 4:if (mc.getTile().getcoords()[0]==width-1) {
+					panPix=1;
+					lock=0;
+					return;
+		}
+				break;
+		}
+		
+		//System.out.println("move" +panPix);
+		if(panPix%26!=0)
+			transform(xTiles, yTiles);
+			panPix++;
+		if(panPix%26==0) {
+			switch(lock) {
+			case 1:mc.setTile(getMap()[ mc.getTileCoords()[1]-1][mc.getTileCoords()[0]]);
+					break;
+			case 2:mc.setTile(getMap()[mc.getTileCoords()[1]][mc.getTileCoords()[0]-1]);
+					break;
+			
+			case 3:mc.setTile(getMap()[mc.getTileCoords()[1]+1][mc.getTileCoords()[0]]);
+					break;
+			
+			case 4:mc.setTile(getMap()[mc.getTileCoords()[1]][mc.getTileCoords()[0]+1]);
+					break;
+			}
+			
+		}
+		if(panPix%26==0&&key!=0&&key!=dir) {
+			lock=key;
+			panPix=1;
+			return;
+		}
+		else if(panPix%26==0&&key==0) {
+			panPix=1;
+			lock=0;
+			return;
+			
+		}
+		
+		
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	public int getWidth() {
+		return width;
+	}
+
 }
