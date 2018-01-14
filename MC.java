@@ -24,7 +24,7 @@ public class MC extends Entity {
 	private boolean stationary=true;
 	private int pixMoved;
 	private BufferedImage[] curSprite=m.mcIdle;
-	private char face;
+	private int face;
 	private int key;
 	Key w;
 	Key a;
@@ -39,6 +39,13 @@ public class MC extends Entity {
 	private int tilePointerY=0;
 	private Tile tile;
 	private int lastFace=1;
+	private Tile lastTile;
+	private int betweenPix=0;
+	private Tile nextTile;
+	private int[] betweenPixArray=new int[24];
+	private int xMid;
+	private int yMid;
+
 	
 	public MC() throws IOException{
 		
@@ -50,40 +57,56 @@ public class MC extends Entity {
 		yd=0;
 		direction='q';
 		pixMoved=0;
-		face='w';
+		face=1;
 		key=0;
+		yMid=0;
+		xMid=0;
 	}
 	public MC(int x, int y, Map map) throws IOException {
 		this();
 		this.x=x;
 		this.y=y;
-		tile=map.getMap()[map.getMap().length/2][map.getMap().length/2];
-		
-		
+		tile=map.getMap()[5][5];
+		lastTile=null;
+		xMid=tile.getX();
+		yMid=tile.getY();
+		face=1;
 		
 	}
 	
-	public void render(Graphics g,int[] keys,Key w, Key a, Key s, Key d,Map map) {
+	public void render(Graphics g,int[] keys,Key w, Key a, Key s, Key d,Map map,int anim) {
+
+		this.face=face;
 		this.w=w;
 		this.a=a;
 		this.s=s;
 		this.d=d;
-		key=direction;
+		boolean input=false;
+		key=0;
 		//forced movement
 		for (int z=3;z>-1;z--) {
 			if(keys[z]!=0) {
 				key=keys[z];
+				input=true;
 				break;
 			}
+		}	
+		if(map.lock!=0) {
+			face=map.lock;
 		}
-		
+		//Moving
+		if(key!=0||map.lock!=0) {
+			faceFindMove(g,anim);
+		}
+		//Moving
+		else {
+			faceFindIdle(g,anim);
+		}
 		//computation(key);
-
-		//find middle of the map to draw the character
-		int xMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getX();
-		int yMid=map.getMap()[map.getMap().length/2][map.getMap().length/2].getY();
+	
 		
-		g.drawImage(m.mcIdle[1], getTile().getX(),getTile().getY(), null);
+		
+		
 
 
 	}
@@ -92,6 +115,38 @@ public class MC extends Entity {
 		return System.nanoTime();
 	}
 	
+	public void faceFindMove(Graphics g, int anim) {
+		switch(face) {
+		case 1:	if(anim%2==0)g.drawImage(m.mcUp[0], xMid,yMid, null);
+				else if(anim%2==1) g.drawImage(m.mcUp[1], xMid,yMid, null);
+				break;
+		case 2:	if(anim%2==0)g.drawImage(m.mcLeft[0], xMid,yMid, null);
+				else if(anim%2==1) g.drawImage(m.mcLeft[1], xMid,yMid, null);
+				break;
+		case 3:	if(anim%2==0)g.drawImage(m.mcDown[0], xMid,yMid, null);
+				else if(anim%2==1) g.drawImage(m.mcDown[1], xMid,yMid, null);
+				break;
+		case 4:	if(anim%2==0)g.drawImage(m.mcRight[0],xMid,yMid, null);
+				else if(anim%2==1) g.drawImage(m.mcRight[1],xMid,yMid, null);
+
+				break;
+		}	
+		//System.out.println("array "+betweenPixArray[1]);	
+		
+		}
+		
+		public void faceFindIdle(Graphics g, int anim) {
+			switch(face) {
+			case 1:	g.drawImage(m.mcIdle[3],xMid,yMid, null);
+					break;
+			case 2:	g.drawImage(m.mcIdle[1], xMid,yMid, null);
+					break;
+			case 3:	g.drawImage(m.mcIdle[0], xMid,yMid, null);
+					break;
+			case 4:	g.drawImage(m.mcIdle[2], xMid,yMid, null);
+					break;
+			}	
+	}
 	public void moveMe(int key, Graphics g) {
 		//are you allowed to go where you want?
 		
@@ -232,7 +287,9 @@ public class MC extends Entity {
 	}
 	
 	public void setTile(Tile tile) {
+		lastTile=this.tile;
 		this.tile=tile;
+		
 		xLoc=tile.getcoords()[0];
 		yLoc=tile.getcoords()[1];
 	}
@@ -248,5 +305,13 @@ public class MC extends Entity {
 		}
 	}
 	
+	public void setFace(int face) {
+		this.face=face;
+	}
 	
+	public Tile getLastTile() {
+		return lastTile;
+	}
+
+
 }

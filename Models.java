@@ -1,6 +1,6 @@
 package field;
 
-import java.awt.Color;
+
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -24,6 +24,7 @@ public class Models {
 	public BufferedImage tileset;
 	public BufferedImage iconset;
 	public BufferedImage [][]icons;
+	public BufferedImage pokemonLogo;
 	
 	
 	public Models() {
@@ -38,8 +39,7 @@ public class Models {
 		for(int i=0;i<8;i++) {
 			viking[i]=clip(vikings,15*i,0,15,15);
 		}	
-		File pokemonf= new File("images/pokemon.png");
-		pokemon=ImageIO.read(pokemonf);
+		pokemon=ImageIO.read(Models.class.getResource("pokemon.png"));
 		
 		mcIdle=new BufferedImage[4];
 		for(int x=0;x<4;x++) {
@@ -47,24 +47,22 @@ public class Models {
 		}
 		mcUp=new BufferedImage[2];
 		for(int x=0;x<2;x++) {
-			mcUp[x]=clip(pokemon,393,173+27*x,25,27);
+			mcUp[x]=clip(pokemon,392,173+32*x,25,32);
 		}
 		mcDown=new BufferedImage[2];
 		for(int x=0;x<2;x++) {
-			mcDown[x]=clip(pokemon,318,173+27*x,25,30);
+			mcDown[x]=clip(pokemon,317,173+32*x,25,32);
 		}
 		mcRight=new BufferedImage[2];
 		for(int x=0;x<2;x++) {
-			mcRight[x]=clip(pokemon,369,173+27*x,25,27);
+			mcRight[x]=clip(pokemon,367 ,173+32*x,25,32);
 		}
 		mcLeft=new BufferedImage[2];
 		for(int x=0;x<2;x++) {
-			mcLeft[x]=clip(pokemon,343,173+25*x,23,25);
+			mcLeft[x]=clip(pokemon,342,173+32*x,25,32);
 		}
 		
-		File f=new File("src/field/tiles-small.png");
-		System.out.println(f.exists());
-		tileset=ImageIO.read(f);
+		tileset=ImageIO.read(Models.class.getResource("tiles-small.png"));
 		int tilesetH=tileset.getHeight()/Tile.TILESIZE;
 		int tilesetW=tileset.getWidth()/Tile.TILESIZE;
 		tiles=new BufferedImage[tilesetH][tilesetW];
@@ -84,6 +82,7 @@ public class Models {
 			}
 		}
 		
+		pokemonLogo=ImageIO.read(Models.class.getResource("pokemon_logo_2.png"));
 		
 	}
 	
@@ -101,20 +100,7 @@ public class Models {
 		if(newImage==null) {
 			newImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
 		}
-		
-		int[]pixels=new int[w*h];
-		src.getRGB(x, y, w, h, pixels, 0, w);
-		if(src.getHeight()>=200) {
-			Color c=new Color(src.getRGB(0, 200),true);
-			for(int i=0;i<pixels.length;i++) {
-			if(pixels[i]==c.getRGB()) {
-				pixels[i]=c.getRGB();
-				//System.out.println("TEHTAWFE");
-			}
-		}
-		}
-		
-		newImage.setRGB(0, 0, w,h,pixels,0,w);
+		newImage=src.getSubimage(x, y, w, h);
 		return newImage;
 	}
 }

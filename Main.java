@@ -1,17 +1,25 @@
 package field;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
+import java.net.URL;
 
-
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
 
-public class Main extends JFrame implements Runnable{
+public class Main extends JFrame implements Runnable,ActionListener{
 	private Models models = new Models();
 	private Canvas canvas=new Canvas();
 	private boolean pause;
@@ -23,15 +31,21 @@ public class Main extends JFrame implements Runnable{
 	int[] forcedmove;
 	private int tick=0;
 	static final int TILES_ON_SCREEN=11;
+	boolean start=false;
+	Container contentpane;
+	private boolean skip=false;
+	private boolean menuActive=true;
+	private int face;
 	
-	int face;
 	public Main() {
 		w=new Key(0,'w');
 		a=new Key(0,'a');
 		s=new Key(0,'s');
 		d=new Key(0,'d');
-		face=1;
+		face=0;
 		setBounds(0,0,Tile.TILESIZE*TILES_ON_SCREEN,Tile.TILESIZE*TILES_ON_SCREEN);
+		setVisible(true);
+		
 	}
 	public void run() {
 		try {
@@ -42,13 +56,20 @@ public class Main extends JFrame implements Runnable{
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	//first thing of the game
-	public void start() throws IOException, ClassNotFoundException {
+	public void start() throws IOException, ClassNotFoundException, UnsupportedAudioFileException, LineUnavailableException {
 		initialize();
 		input();
 	}
+
 	//load the initial variables
 	public void initialize() throws IOException {
 		models.loadAll();
@@ -60,7 +81,6 @@ public class Main extends JFrame implements Runnable{
 		setLocationRelativeTo(null);
 		
 		add(canvas);
-		setVisible(true);
 		setResizable(false);
 		canvas.createBufferStrategy(3);
 		buffer=canvas.getBufferStrategy();
@@ -92,9 +112,22 @@ public class Main extends JFrame implements Runnable{
 					 meme++;ican[meme]=3;s.setPriority(1);
 				 }
 				 if(arg.getKeyChar()=='d'&&d.getPriority()==0) {
-					 meme++;ican[meme]=4;d.setPriority(1); 
+					 meme++;ican[meme]=4;d.setPriority(1);
 					 
 				 }
+				 if(arg.getKeyChar()=='i') {
+					 start=!start;
+					 System.out.println(start);
+					 skip=!skip;
+					 
+				 }
+				 if(arg.getKeyChar()=='s'){
+					 menuActive=!menuActive;
+				 }
+				 if(arg.getKeyChar()=='w'){
+					 menuActive=!menuActive;
+				 }
+
 
 
 			 }
@@ -151,8 +184,8 @@ public class Main extends JFrame implements Runnable{
 			};
 		canvas.addKeyListener(key);
 	}
-	
-	public void input() throws IOException, ClassNotFoundException {
+	// TODO THIS NEEDS REFACTORING
+	public void input() throws IOException, ClassNotFoundException, UnsupportedAudioFileException, LineUnavailableException {
 		
 		//fix the screen not having the right amount of pixels
 		canvas.setPreferredSize(getSize());
@@ -169,7 +202,6 @@ public class Main extends JFrame implements Runnable{
 //		try {
 //			map.load("20.txt");
 //		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 		MC mc = new MC(125,125,map);
@@ -182,10 +214,115 @@ public class Main extends JFrame implements Runnable{
 		
 		int key=0;
 		long timeAtLastUpdate=0;	
-		int face=0;
-		long uncountedtime=System.nanoTime();
-		float highest=0f;
-		float lowest=0f;
+		long jingleLength=0;
+		long battleLength=0;
+		MainMenu menu=new MainMenu(this,buffer.getDrawGraphics(),buffer,m);
+		int c=0;
+//		URL url=Main.class.getResource("titleTheme.wav");
+//		URL veno=Main.class.getResource("venocry.wav");
+		URL jingle=Main.class.getResource("GameFreakJingle.wav");
+		URL battle=Main.class.getResource("LoadingBattle.wav");
+		//Game Freak Jingle
+		try {
+			AudioInputStream audioIn=AudioSystem.getAudioInputStream(jingle);
+			Clip clip=AudioSystem.getClip();
+			clip.open(audioIn);
+			jingleLength=clip.getMicrosecondLength();
+			clip.start();
+			while(!skip) {
+				int i=1;
+				System.out.println(i);
+			}
+			skip=false;
+			clip.close();
+			audioIn.close();
+			
+		}
+		catch(Exception e) {}
+		//Battle
+		try {
+			AudioInputStream audioIn=AudioSystem.getAudioInputStream(battle);
+			Clip clip=AudioSystem.getClip();
+			clip.open(audioIn);
+			battleLength=clip.getMicrosecondLength();
+			clip.start();
+			while(!skip) {
+				int i=1;
+				System.out.println(i);
+			}
+			skip=false;
+			clip.close();
+			audioIn.close();
+		}
+		catch(Exception e) {}
+		//Main Screen
+		Clip clip=AudioSystem.getClip();
+		try {
+		URL title=Main.class.getResource("titleTheme.wav");
+		AudioInputStream audioIn3=AudioSystem.getAudioInputStream(title);
+		
+		clip.open(audioIn3);
+		clip.start();
+		clip.loop(Clip.LOOP_CONTINUOUSLY);
+		}
+		catch(Exception e) {} 
+		
+		while(!start) {
+					System.out.println(c);
+					c++;
+					if(c>1) {
+						menu.startImage(true);
+						if(c>2)c=0;
+					}
+					else {
+						menu.startImage(false);
+					}
+		}
+		skip=false;
+		//Venosaur sound
+		URL veno=Main.class.getResource("venocry.wav");
+		try {
+		AudioInputStream audioIn2=AudioSystem.getAudioInputStream(veno);
+		Clip clip2=AudioSystem.getClip();
+		clip2.open(audioIn2);
+		clip2.start();
+		}
+		catch (UnsupportedAudioFileException e) {} 
+		catch (LineUnavailableException e) {} 
+		catch (IOException e) {}
+		try {Thread.sleep(2000);}
+		catch(Exception e) {}
+		
+//		canvas.setEnabled(false);
+		//Main Menu
+	
+		while(!skip) {
+		menu.Menu(this,clip,menuActive);
+		}
+		if(!menuActive){
+			System.exit(0);
+		}
+		//blip sound
+		URL blip=Main.class.getResource("blip.wav");
+		try {
+			AudioInputStream audioIn2=AudioSystem.getAudioInputStream(blip);
+			Clip clip2=AudioSystem.getClip();
+			clip2.open(audioIn2);
+			clip2.start();
+			}
+			catch (UnsupportedAudioFileException e) {} 
+			catch (LineUnavailableException e) {} 
+			catch (IOException e) {}
+
+
+		{	
+
+		}
+		try {Thread.sleep(2000);}
+		catch(Exception e) {}	
+		
+		int anim=0;
+		int frames=0;
 		while(!pause) {
 			do {
 				do {
@@ -203,35 +340,59 @@ public class Main extends JFrame implements Runnable{
 //					System.out.println("HIGHEST:/t"+highest);
 //					System.out.println("LOWEST:/t"+lowest);
 //					uncountedtime=System.nanoTime();
-					
-					if(System.nanoTime()-timeAtLastUpdate>toNano(.1f)){
+				
+					if(System.nanoTime()-timeAtLastUpdate>toNano(.01f)){
+						frames+=1;
+						if(frames==100)frames=0;
 						//parses input data
+						
+						//provides reference point for animations
+						if(frames%20==0)anim+=1;
+						if(anim==6)anim=0;
+						
 						//moves character
-						if(key!=0) {
-							if(mc.isFace(face)) {
+//						if(frames%5==0) {
+						if(key!=0&&map.lock==0) {
+							if(face==key) {
 								if(key==1&&map.nextTile(key, mc)!=null) {
-									map.transform(0, Tile.TILESIZE);
-									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]-1][mc.getTile().getcoords()[0]]);
+									map.pan(0, 1,1,key,mc);
+//									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]-1][mc.getTile().getcoords()[0]]);
 									}
 								if(key==2&&map.nextTile(key, mc)!=null) {
-									map.transform(Tile.TILESIZE, 0);
-									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]-1]);
+									map.pan(1, 0,2,key,mc);
+//									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]-1]);
 								}
 								if(key==3&&map.nextTile(key, mc)!=null) {
-									map.transform(0, -Tile.TILESIZE);
-									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]+1][mc.getTile().getcoords()[0]]);
+									map.pan(0, -1,3,key,mc);
+//									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]+1][mc.getTile().getcoords()[0]]);
 								}
 								if(key==4&&map.nextTile(key, mc)!=null) {
-									map.transform(-Tile.TILESIZE, 0);
-									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]+1]);
+									map.pan(-1, 0,4,key,mc);
+//									mc.setTile(map.getMap()[mc.getTile().getcoords()[1]][mc.getTile().getcoords()[0]+1]);
 								}
-								
 							}
+//						}
 							else face=key;
 								
-								
-							
+
 						}
+						if(map.lock!=0){
+								switch(map.lock) {
+								
+									case 1:map.pan(0, 1,map.lock,key,mc);
+//											System.out.println("UP");
+											break;
+									case 2:map.pan(1, 0,map.lock,key,mc);
+//											System.out.println("LEFT");
+											break;
+									case 3:map.pan(0, -1,map.lock,key,mc);
+//											System.out.println("DOWN");
+											break;
+									case 4:map.pan(-1, 0,map.lock,key,mc);
+//											System.out.println("RIGHT");
+											break;
+								}
+							}
 						timeAtLastUpdate=System.nanoTime();
 						key=0;
 						tick++;
@@ -246,8 +407,10 @@ public class Main extends JFrame implements Runnable{
 					
 						
 					map.render(g);
-
-					mc.render(g,ican,w,a,s,d,map);
+					canvas.setBackground(Color.blue);
+					mc.render(g,ican,w,a,s,d,map,anim);
+					System.out.println(mc.getTile().getcoords()[0]+" "+mc.getTile().getcoords()[1]);
+//					System.out.println(mc.getTileCoords()[0]+""+mc.getTileCoords()[1]);
 //System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
 				}while(buffer.contentsRestored());
 				
@@ -280,4 +443,14 @@ public class Main extends JFrame implements Runnable{
 		(new Thread(new Main())).start();
 		//(new Thread(new )).start();
 		}
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("HELLO");
+		if(arg0!=null) {
+			System.out.println("BURRONT");
+			start=!start;
+		}
+		
+	}
 }

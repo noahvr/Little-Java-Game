@@ -102,7 +102,12 @@ public class MapEditor implements MouseListener,Runnable{
 				for(int y=0;y<mapY;y++) {
 					for(int x=0;x<mapX;x++) {
 						if(map.getMap()[y][x].isOn(e.getX(), e.getY())) {
-							map.getMap()[y][x].setImage(curIm,"MEME");
+							if(curIm.getTransparency()==BufferedImage.TRANSLUCENT) {
+								map.getMap()[y][x].setImage(curIm,false);
+							}
+							else {
+								map.getMap()[y][x].setImage(curIm,true);
+							}
 							return;
 						}
 						//System.out.println(map.getMap()[y][x].getX());
@@ -137,6 +142,9 @@ public class MapEditor implements MouseListener,Runnable{
 				oout.close();
 				}
 				catch(Exception e1) {}
+			}
+			if(e.getButton()==e.BUTTON2) {
+				
 			}
 	
 	}
@@ -194,10 +202,13 @@ public class MapEditor implements MouseListener,Runnable{
 				for(int y=0;y<28;y++) {
 					for(int x=0;x<23;x++) {
 						g.drawImage(Models.tiles[y][x], Tile.TILESIZE*x, Tile.TILESIZE*y, null);
+						if(Models.tiles[y][x].getTransparency()==BufferedImage.TRANSLUCENT) {
+							
+						}
 					}
 				}
 				//System.out.println(map.getMap()[0][1].getXLoc()+" "+map.getMap()[0][1].getYLoc());
-			if(curIm!=null)g.drawImage(curIm, 200, frame.getHeight()*3/4, null);
+			if(curIm!=null)g.drawImage(curIm, frame.getWidth()-100, frame.getHeight()-100, null);
 			}
 			
 			}
