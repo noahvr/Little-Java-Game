@@ -9,13 +9,14 @@ Entities:
 
 	-Character				Works
 	-Character movement			Works
-	-Character animations			In Progress
+	-Character animations			Works
 	
 Map:	
 
 	-Tiles/map				Works
-	-Alpha for images			In Progress
-	-Collision				In Progress
+	-Alpha for images			Works
+	-Collision with walls			works
+	-Collision with objects			Not Started
 	-Save progress				Not Started
 	-
 	-
