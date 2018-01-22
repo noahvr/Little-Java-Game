@@ -3,6 +3,8 @@ package field;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -16,10 +18,12 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
-public class MapEditor implements MouseListener,Runnable{
+public class MapEditor implements MouseListener,Runnable,KeyListener{
 		JFrame frame=new JFrame();
 		private int mapX;
 		private int mapY;
+		private int spawnX;
+		private int spawnY;
 		private Canvas canvas=new Canvas();
 		Main main= new Main();
 		Tile [][] rofl;
@@ -81,7 +85,7 @@ public class MapEditor implements MouseListener,Runnable{
 
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-			System.out.println(e.getButton());
+			System.out.println("You clicked mouse button "+e.getButton());
 			if(e.getX()<=575) {
 				for(int y=0;y<29;y++) {
 					for(int x=0;x<23;x++) {
@@ -92,10 +96,9 @@ public class MapEditor implements MouseListener,Runnable{
 						}
 					}
 				}
-
 				
 			}
-			else {
+			else if(e.getButton()==1){
 				//map.getMap()[e.getY()/Tile.TILESIZE][(e.getX()-32)/Tile.TILESIZE].setImage(curIm);
 //				System.out.println(e.getX()+" "+e.getY());
 //				System.out.println(map.getMap()[10][10].getX()
@@ -116,35 +119,52 @@ public class MapEditor implements MouseListener,Runnable{
 				//System.out.println(map.getMap()[e.getY()/32+1][(e.getX()-32)/32+1].getYLoc()+" "+map.getMap()[e.getY()/32+1][(e.getX()-32)/32+1].getXLoc());
 			}
 			if(e.getButton()==3) {
-				Scanner scan=new Scanner(System.in);
-				System.out.println("Please enter the name of the save file use txt");
-				String saveF=scan.next();
-				scan.close();
-//				Models m=new Models();
-//				m.loadAll();
-			
-				
-				int[] pixels=new int[25*25];
-				int[] emptypixels=new int[25*25];
-				try {
-				FileOutputStream fout=new FileOutputStream(saveF);
-				ObjectOutputStream oout=new ObjectOutputStream(fout);
-				oout.writeInt(mapX);
-				oout.writeInt(mapY);
 				for(int y=0;y<mapY;y++) {
 					for(int x=0;x<mapX;x++) {
-						rofl[y][x].getImage().getRGB(0, 0, 25, 25, pixels, 0,25);
-						//System.out.println(pixels);
-						oout.writeObject(pixels);
-						pixels=emptypixels.clone();
+						if(map.getMap()[y][x].isOn(e.getX(), e.getY())) {
+							map.getMap()[y][x].setPassable(false);
+							System.out.println("Tile "+x+" "+y+" has been made impassible");
+							return;
+						}
+						//System.out.println(map.getMap()[y][x].getX());
 					}
 				}
-				oout.close();
-				}
-				catch(Exception e1) {}
 			}
 			if(e.getButton()==e.BUTTON2) {
+				Scanner scan= new Scanner(System.in);
+				System.out.println("enter nothing if you want to make spawn");
+				String s= scan.next();
+				if(s!="s") {
+					System.out.println("eneter the type of event");
+					s=scan.next();
+					switch(s) {
+						case "text":
+							for(int y=0;y<mapY;y++) {
+								for(int x=0;x<mapX;x++) {
+									if(map.getMap()[y][x].isOn(e.getX(), e.getY())) {
+										map.getMap()[y][x].setEvent(new OneTimeTextEvent(TextCode.A));
+										System.out.println("Tile "+x+" "+y+" has been set text event ");
+										return;
+									}
+								}
+							}
+							break;
+						case "tele":
+							break;
+					}
+				}
 				
+				for(int y=0;y<mapY;y++) {
+					for(int x=0;x<mapX;x++) {
+						if(map.getMap()[y][x].isOn(e.getX(), e.getY())) {
+							spawnX=x;
+							spawnY=y;
+							System.out.println("Tile "+x+" "+y+" has been made the spawn point.");
+							return;
+						}
+						//System.out.println(map.getMap()[y][x].getX());
+					}
+				}
 			}
 	
 	}
@@ -174,7 +194,7 @@ public class MapEditor implements MouseListener,Runnable{
 			//fix the screen not having the right amount of pixels
 
 			canvas.addMouseListener(this);
-
+			canvas.addKeyListener(this);
 			for (int i=0;i<mapY;i++) {
 				for(int o=0;o<mapX;o++) {
 					rofl[i][o]=new Tile(o,i,o*Tile.TILESIZE,i*Tile.TILESIZE);
@@ -230,6 +250,52 @@ public class MapEditor implements MouseListener,Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getKeyChar()=='s') {
+			Scanner scan=new Scanner(System.in);
+			System.out.println("Please enter the name of the save file use txt");
+			String saveF=scan.next();
+			scan.close();
+//			Models m=new Models();
+//			m.loadAll();
+		
+			
+			int[] pixels=new int[25*25];
+			int[] emptypixels=new int[25*25];
+			try {
+			FileOutputStream fout=new FileOutputStream(saveF);
+			ObjectOutputStream oout=new ObjectOutputStream(fout);
+			oout.writeInt(mapX);
+			oout.writeInt(mapY);
+			oout.writeInt(spawnX);
+			oout.writeInt(spawnY);
+			for(int y=0;y<mapY;y++) {
+				for(int x=0;x<mapX;x++) {
+					rofl[y][x].getImage().getRGB(0, 0, 25, 25, pixels, 0,25);
+					//System.out.println(pixels);
+					oout.writeObject(pixels);
+					pixels=emptypixels.clone();
+					oout.writeBoolean(rofl[y][x].passable);
+					oout.writeObject(rofl[y][x].getEvent());
+				}
+			}
+			oout.close();
+			}
+			catch(Exception e1) {}
+		}
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
