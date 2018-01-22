@@ -23,10 +23,13 @@ public class Map {
 	private Tile[][] map;
 	private int x;
 	private int y;
+	private int spawnX;
+	private int spawnY;
 	private boolean navigate;
 	public int lock;
 	private int panPix=1;
 	private Entity[] a;
+	public Tile spawn;
 	//Class Methods
 	
 	//Instance Methods
@@ -53,7 +56,8 @@ public class Map {
 		int[]emptypixels=new int [25*25];
 		width=oin.readInt();
 		height=oin.readInt();
-		
+		spawnX=oin.readInt();
+		spawnY=oin.readInt();
 		map=new Tile[height][width];
 		
 		for (int i=0;i<height;i++) {
@@ -73,8 +77,11 @@ public class Map {
 				pixels=emptypixels.clone();
 				
 				image.setRGB(0, 0, 25, 25, emptypixels, 0, 25);
+				getMap()[y][x].setPassable(oin.readBoolean()); 
+				getMap()[y][x].setEvent((Event)oin.readObject());
 			}
 		}
+		spawn=getMap()[spawnY][spawnX];
 	}
 	public Map(int width, int height, Tile[][] map) {
 		this.width=width;
@@ -174,30 +181,31 @@ public class Map {
 	public void pan(int xTiles,int yTiles,int dir, int key, MC mc) {
 		//1 up 2 left 3 down 4 right
 		lock=dir;
+
 		switch(lock) {
-		case 1:if (mc.getTile().getcoords()[1]==0 ) {
+		case 1:if(!getMap()[mc.getTileCoords()[1]-1][mc.getTileCoords()[0]].passable) {
 					panPix=1;
-					lock=0;
+					lock=key;
 					return;
 				}
 				break;
-		case 2:if (mc.getTile().getcoords()[0]==0) {
+		case 2:if(!getMap()[mc.getTileCoords()[1]][mc.getTileCoords()[0]-1].passable) {
 					panPix=1;
-					lock=0;
+					lock=key;
 					return;
 		}
 				break;
 		
-		case 3:if (mc.getTile().getcoords()[1]==height-1) {
+		case 3:if(!getMap()[mc.getTileCoords()[1]+1][mc.getTileCoords()[0]].passable) {
 					panPix=1;
-					lock=0;
+					lock=key;
 					return;
 		}
 				break;
 		
-		case 4:if (mc.getTile().getcoords()[0]==width-1) {
+		case 4:if(!getMap()[mc.getTileCoords()[1]][mc.getTileCoords()[0]+1].passable) {
 					panPix=1;
-					lock=0;
+					lock=key;
 					return;
 		}
 				break;
@@ -242,6 +250,9 @@ public class Map {
 	}
 	public int getWidth() {
 		return width;
+	}
+	public void setSpawn(Tile spawn) {
+		this.spawn=spawn;
 	}
 
 }

@@ -1,64 +1,48 @@
 package field;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Scanner;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
 
-public class TESTER {
+public class TESTER extends Frame{
 
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		Scanner scan=new Scanner(System.in);
-		System.out.println("Please enter the name of the save file use txt");
-		String saveF=scan.nextLine();
-//		System.out.println("Please enter the width of the save file");
-//		int width=scan.nextInt();
-//		System.out.println("Please enter the height of the save file");
-//		int height=scan.nextInt();
-		scan.close();
-		Models m=new Models();
-		m.loadAll();
-		Tile[][] t=new Tile[11][11];
-		for(int y=0;y<11;y++) {
-			for(int x=0;x<11;x++) {
-				
-				t[y][x]=new Tile(x,y,y*Tile.TILESIZE, x*Tile.TILESIZE);
-				
-				t[y][x].setImage(Models.tiles[y][x],"MEMER");
-			}
-		}
-	
-		
-		int[] pixels=new int[25*25];
-		int[] emptypixels=new int[25*25];
-		FileOutputStream fout=new FileOutputStream(saveF);
-		ObjectOutputStream oout=new ObjectOutputStream(fout);
-		oout.writeInt(11);
-		oout.writeInt(11);
-		for(int y=0;y<11;y++) {
-			for(int x=0;x<11;x++) {
-				t[y][x].getImage().getRGB(0, 0, 25, 25, pixels, 0,25);
-				System.out.println(pixels);
-				oout.writeObject(pixels);
-				oout.write(';');
-				pixels=emptypixels.clone();
-			}
-		}
-		oout.close();
-		//WORKS DONT BREAK
-		
-//		int[] pixels=new int[Models.tiles[10][10].getHeight()*Models.tiles[10][10].getWidth()];
-//		Models.tiles[10][10].getRGB(0, 0, Models.tiles[10][10].getWidth(), Models.tiles[10][10].getHeight(), pixels, 0, Models.tiles[10][10].getWidth());
-//		
-//		FileOutputStream fout=new FileOutputStream("ok.txt");
-//		ObjectOutputStream oout= new ObjectOutputStream(fout);
-//		
-//		oout.writeObject(pixels);
-//		System.out.println(pixels);
-			
-		
-		
+	public void paint(Graphics g)
+	   {
+	      setBackground(Color.black);
+	      setForeground(Color.white);
+	      Font tr = new Font("TimesRoman", Font.PLAIN, 18);
+	      Font trb = new Font("TimesRoman", Font.BOLD, 18);
+	      Font tri = new Font("TimesRoman", Font.ITALIC, 18);
+	      Font trbi = new Font("TimesRoman", Font.BOLD+Font.ITALIC, 18);
+	      Font h = new Font("Helvetica", Font.PLAIN, 18);
+	      Font c = new Font("Courier", Font.PLAIN, 18);
+	      Font d = new Font("Dialog", Font.PLAIN, 18);      
+	      Font z = new Font("ZapfDingbats", Font.PLAIN, 18);            
+
+	      g.setFont(tr);
+	      g.drawString("Hello World (times roman plain)",10,25);
+	      g.setFont(trb);
+	      g.drawString("Hello World (times roman bold)",10,50);
+	      g.setFont(tri);
+	      g.drawString("Hello World (times roman italic)",10,75);
+	      g.setFont(trbi);
+	      g.drawString("Hello World (times roman bold & italic)",10,100);
+	      g.setFont(h);
+	      g.drawString("Hello World (helvetica)",10,125);
+	      g.setFont(c);
+	      g.drawString("Hello World (courier)",10,150);
+	      g.setFont(d);
+	      g.drawString("Hello World (dialog)",10,175);
+	      g.setFont(z);
+	      g.drawString("Hello World (zapf dingbats)",10,200);
+	   }
+	   
+	   public static void main (String args[])
+	   {
+	      Frame ff = new TESTER();
+	      ff.resize(400,400);
+	      ff.show();
+	   }
 	}
 
-}

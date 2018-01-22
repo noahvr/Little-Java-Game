@@ -24,6 +24,8 @@ public class Tile {
 	private boolean isEmpty;
 	private boolean showPastImage=false;
 	String imageName;
+	public boolean passable;
+	private Event e;
 
 	public static final int TILESIZE=25;
 	
@@ -37,6 +39,7 @@ public class Tile {
 		absy=y;
 		this.xLoc=xLoc;
 		this.yLoc=yLoc;
+		passable=true;
 
 		width=TILESIZE;
 		height=TILESIZE;
@@ -146,33 +149,17 @@ public class Tile {
 		a[1]=yLoc;
 		return a;
 	}
-	public void showPastImage(boolean show) {
-		showPastImage=show;
+
+	
+	public void setPassable(boolean passable) {
+		this.passable=passable;
 	}
 	
-	public int[] moveToTile(Tile tile) {
-		//goes through all points that are not on the actual tiles
-		int[] moves=new int[24];
-		if(tile.getX()>getX()) {
-			for(int i=0;i<moves.length;i++) {
-				moves[i]=tile.getX()+i+1;
-			}
-		}
-		else if(tile.getX()<getX()) {
-			for(int i=0;i<moves.length;i++) {
-				moves[i]=tile.getX()+i+1;
-			}
-		}
-		else if(tile.getY()>getY()) {
-			for(int i=0;i<moves.length;i++) {
-				moves[i]=tile.getX()+i+1;
-			}
-		}
-		else if(tile.getY()<getY()) {
-			for(int i=0;i<moves.length;i++) {
-				moves[i]=tile.getY()+i+1;
-			}
-		}
-		return moves;
+	
+	public void setEvent(Event e) {
+		this.e=e;
+	}
+	public Event getEvent() {
+		return e;
 	}
 }

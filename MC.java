@@ -66,21 +66,19 @@ public class MC extends Entity {
 		this();
 		this.x=x;
 		this.y=y;
-		tile=map.getMap()[5][5];
+		setTile(map.spawn);
+		System.out.println(tile);
 		lastTile=null;
-		xMid=tile.getX();
+ 		xMid=tile.getX();
 		yMid=tile.getY();
 		face=1;
 		
 	}
 	
-	public void render(Graphics g,int[] keys,Key w, Key a, Key s, Key d,Map map,int anim) {
+	public void render(Graphics g,int[] keys,Map map,int anim) {
 
 		this.face=face;
-		this.w=w;
-		this.a=a;
-		this.s=s;
-		this.d=d;
+
 		boolean input=false;
 		key=0;
 		//forced movement
@@ -116,6 +114,7 @@ public class MC extends Entity {
 	}
 	
 	public void faceFindMove(Graphics g, int anim) {
+		direction=face;
 		switch(face) {
 		case 1:	if(anim%2==0)g.drawImage(m.mcUp[0], xMid,yMid, null);
 				else if(anim%2==1) g.drawImage(m.mcUp[1], xMid,yMid, null);
@@ -136,6 +135,7 @@ public class MC extends Entity {
 		}
 		
 		public void faceFindIdle(Graphics g, int anim) {
+			direction=face;
 			switch(face) {
 			case 1:	g.drawImage(m.mcIdle[3],xMid,yMid, null);
 					break;

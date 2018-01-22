@@ -24,7 +24,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 	private Models models = new Models();
 	private Canvas canvas = new Canvas();
 	private boolean pause;
-	private boolean disableInput;
+	private boolean inputBlock;
 	private BufferStrategy buffer;
 	private boolean keyDown = false;
 	long keyTime = 0;
@@ -38,16 +38,15 @@ public class Main extends JFrame implements Runnable, ActionListener {
 	private boolean skip = false;
 	private boolean menuActive = true;
 	private int face;
+	private boolean fastText=false;
 
 	public Main() {
-		disableInput = false;
 		w = new Key(0, 'w');
 		a = new Key(0, 'a');
 		s = new Key(0, 's');
 		d = new Key(0, 'd');
 		face = 0;
-		setBounds(0, 0, Tile.TILESIZE * TILES_ON_SCREEN, Tile.TILESIZE
-				* TILES_ON_SCREEN);
+		setBounds(0, 0, Tile.TILESIZE * TILES_ON_SCREEN, Tile.TILESIZE * TILES_ON_SCREEN);
 		setVisible(true);
 
 	}
@@ -71,8 +70,8 @@ public class Main extends JFrame implements Runnable, ActionListener {
 	}
 
 	// first thing of the game
-	public void start() throws IOException, ClassNotFoundException,
-			UnsupportedAudioFileException, LineUnavailableException {
+	public void start()
+			throws IOException, ClassNotFoundException, UnsupportedAudioFileException, LineUnavailableException {
 		initialize();
 		input();
 	}
@@ -100,7 +99,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 			public void keyPressed(KeyEvent arg) {
 				// chain together movement commands
 				// System.out.println("ITS "+keyTime+"Hmmmmm");
-				if (!disableInput) {
+				if (!inputBlock) {
 					keyTime = System.nanoTime();
 					keyDown = true;
 					// System.out.println(arg.getKeyChar()+" KEY IS DOWN");
@@ -125,24 +124,30 @@ public class Main extends JFrame implements Runnable, ActionListener {
 						d.setPriority(1);
 
 					}
-					if (arg.getKeyChar() == 'i') {
-						start = !start;
-						System.out.println(start);
-						skip = !skip;
+				}
 
-					}
-					if (arg.getKeyChar() == 's') {
-						menuActive = !menuActive;
-					}
-					if (arg.getKeyChar() == 'w') {
-						menuActive = !menuActive;
-					}
+				if (arg.getKeyChar() == 'i') {
+
+					//System.out.println(start);
+					start=true;
+					skip=true;
+					fastText=true;
+
+				}
+				if (arg.getKeyChar() == 's') {
+					menuActive = !menuActive;
+				}
+				if (arg.getKeyChar() == 'w') {
+					menuActive = !menuActive;
 				}
 
 			}
 
 			public void keyTyped(KeyEvent arg) {
 				// System.out.println(arg.getKeyChar());
+				if(arg.getKeyChar()=='i') {
+
+				}
 				if (arg.getKeyChar() == 'p')
 					pause = !pause;
 
@@ -150,6 +155,11 @@ public class Main extends JFrame implements Runnable, ActionListener {
 
 			public void keyReleased(KeyEvent arg) {
 				keyDown = false;
+				if(arg.getKeyChar()=='i') {
+					fastText=false;
+					skip=false;
+					start=false;
+				}
 				if (arg.getKeyChar() == 'w') {
 					w.setPriority(0);
 					for (int i = 0; i < 4; i++) {
@@ -210,8 +220,8 @@ public class Main extends JFrame implements Runnable, ActionListener {
 	}
 
 	// TODO THIS NEEDS REFACTORING
-	public void input() throws IOException, ClassNotFoundException,
-			UnsupportedAudioFileException, LineUnavailableException {
+	public void input()
+			throws IOException, ClassNotFoundException, UnsupportedAudioFileException, LineUnavailableException {
 
 		// fix the screen not having the right amount of pixels
 		canvas.setPreferredSize(getSize());
@@ -224,14 +234,14 @@ public class Main extends JFrame implements Runnable, ActionListener {
 		// }
 		// }
 
-		Map map = new Map("beachhouse.txt");
+		// Map map = new Map("beachhouse.txt");
+		Map map = new Map("pppp.txt");
 		// try {
 		// map.load("20.txt");
 		// } catch (ClassNotFoundException e) {
 		// e.printStackTrace();
 		// }
 		MC mc = new MC(125, 125, map);
-		mc.setTile(map.getMap()[5][5]);
 		Models m = new Models();
 		m.loadAll();
 
@@ -256,7 +266,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 			clip.start();
 			while (!skip) {
 				int i = 1;
-				System.out.println(i);
+				System.out.println(" ");
 			}
 			skip = false;
 			clip.close();
@@ -273,7 +283,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 			clip.start();
 			while (!skip) {
 				int i = 1;
-				System.out.println(i);
+				System.out.println(" ");
 			}
 			skip = false;
 			clip.close();
@@ -293,7 +303,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 		}
 
 		while (!start) {
-			System.out.println(c);
+			System.out.println(" ");
 			c++;
 			if (c > 1) {
 				menu.startImage(true);
@@ -382,7 +392,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 
 						// moves character
 						// if(frames%5==0) {
-						if (key != 0 && map.lock == 0) {
+						if (key != 0 && map.lock == 0&&!inputBlock) {
 							if (face == key) {
 								if (key == 1 && map.nextTile(key, mc) != null) {
 									map.pan(0, 1, 1, key, mc);
@@ -406,6 +416,7 @@ public class Main extends JFrame implements Runnable, ActionListener {
 								face = key;
 
 						}
+						// continues if locked
 						if (map.lock != 0) {
 							switch (map.lock) {
 
@@ -440,11 +451,16 @@ public class Main extends JFrame implements Runnable, ActionListener {
 
 					map.render(g);
 					canvas.setBackground(Color.blue);
-					mc.render(g, ican, w, a, s, d, map, anim);
-					System.out.println(mc.getTile().getcoords()[0] + " "
-							+ mc.getTile().getcoords()[1]);
-					// System.out.println(mc.getTileCoords()[0]+""+mc.getTileCoords()[1]);
-					// System.out.println(mc.getTile().getXLoc()+" "+mc.getTile().getYLoc());
+					mc.render(g, ican, map, anim);
+					inputBlock=false;
+					if (mc.getTile().getEvent() != null) {
+						mc.getTile().getEvent().runEvent(g, map, mc, new int[] { 2, 3, 4 }, anim, TextCode.A,
+								start,fastText);
+						if(!mc.getTile().getEvent().isDone())inputBlock=true;
+					}
+					System.out.println(inputBlock);
+					// System.out.println(mc.getTile().getcoords()[0]+"
+					// "+mc.getTile().getcoords()[1]);
 				} while (buffer.contentsRestored());
 
 				buffer.show();
